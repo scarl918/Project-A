@@ -1,1 +1,1 @@
-# Project-A
+# Notes & Research RAG Assistant
