@@ -4,6 +4,8 @@ from embedder import Embedder
 from vectorstore import FaissVectorStore
 from rag import answer_query
 from citations import format_citation
+from summarizer import summarize_chunks
+from retrieval_utils import get_chunks_by_paper
 
 DATA_PATH = "data/arxiv_sample.jsonl"
 
@@ -19,17 +21,39 @@ def build_vectorstore():
     vectorstore = FaissVectorStore(dim=embeddings.shape[1])
     vectorstore.add(embeddings, chunks)
 
-    return embedder, vectorstore
+    return embedder, vectorstore, chunks
 
 
 def main():
     print("Welcome to the RAG-Powered Research Assistant!")
     print("Type 'exit' to quit.\n")
 
-    embedder, vectorstore = build_vectorstore()
+    embedder, vectorstore, all_chunks = build_vectorstore()
 
     while True:
         query = input("Enter your research question: ").strip()
+        if query.lower().startswith("summarize"):
+            # expected: "summarize <paper_id>"
+            parts = query.split()
+            if len(parts) != 2:
+                print("Usage: summarize <paper_id>\n")
+                continue
+
+            paper_id = parts[1]
+
+            # IMPORTANT: we need access to all chunks
+            # so slightly refactor build_vectorstore to also return chunks
+            paper_chunks = get_chunks_by_paper(all_chunks, paper_id)
+
+            if not paper_chunks:
+                print("Paper not found in index.\n")
+                continue
+
+            summary = summarize_chunks(paper_chunks)
+            print("\nSummary:\n")
+            print(summary)
+            print("\n" + "-" * 60 + "\n")
+            continue
 
         if query.lower() == "exit":
             print("Goodbye 👋")
