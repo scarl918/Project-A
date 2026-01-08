@@ -17,7 +17,11 @@ def load_arxiv_docs(path):
             docs.append(
                 {
                     "text": text,
-                    "meta": {"id": paper["id"], "categories": paper["categories"]},
+                    "meta": {
+                        "id": paper["id"],
+                        "title": paper["title"].strip().replace("\n", " "),
+                        "categories": paper["categories"],
+                    },
                 }
             )
 

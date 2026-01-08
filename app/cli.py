@@ -3,12 +3,12 @@ from chunker import chunk_documents
 from embedder import Embedder
 from vectorstore import FaissVectorStore
 from rag import answer_query
+from citations import format_citation
 
 DATA_PATH = "data/arxiv_sample.jsonl"
 
 
 def build_vectorstore():
-    # Load and prepare data (done once)
     docs = load_arxiv_docs(DATA_PATH)
     chunks = chunk_documents(docs)
 
@@ -41,8 +41,15 @@ def main():
         print(answer)
 
         print("\nSources:")
+        seen = set()
+
         for i, s in enumerate(sources, 1):
-            print(f"[{i}] paper={s['meta']['id']} " f"chunk={s['meta']['chunk_id']}")
+            paper_id = s["meta"]["id"]
+            if paper_id in seen:
+                continue
+            seen.add(paper_id)
+
+            print(format_citation(s["meta"], i))
 
         print("\n" + "-" * 60 + "\n")
 

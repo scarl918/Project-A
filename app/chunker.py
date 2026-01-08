@@ -28,9 +28,19 @@ def chunk_documents(docs):
     all_chunks = []
 
     for doc in docs:
-        chunks = chunk_text(doc["text"])
+        chunks = chunk_text(doc["text"], chunk_size=180, overlap=40)
 
         for i, chunk in enumerate(chunks):
-            all_chunks.append({"text": chunk, "meta": {**doc["meta"], "chunk_id": i}})
+            all_chunks.append(
+                {
+                    "text": chunk,
+                    "meta": {
+                        **doc["meta"],
+                        "chunk_id": i,
+                        "start_word": i * (180 - 40),
+                        "end_word": i * (180 - 40) + len(chunk.split()),
+                    },
+                }
+            )
 
     return all_chunks
