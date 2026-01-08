@@ -24,7 +24,9 @@ def build_prompt(query, retrieved_chunks):
     prompt = f"""
 You are a helpful research assistant.
 Answer the question using ONLY the context below.
-If the answer is not present in the context, say "I don't know".
+You may synthesize an answer by combining information from the context,
+but do not introduce steps or facts not supported by it.
+If the context is insufficient, say "I don't know".
 
 
 
